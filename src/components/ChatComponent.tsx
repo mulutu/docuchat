@@ -44,7 +44,7 @@ const ChatComponent = ({ chatId }: Props) => {
       id="message-container"
     >
       {/* header */}
-      <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit">
+      <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit overflow-hidden">
         <h3 className="text-xl font-bold">Chat</h3>
       </div>
 
