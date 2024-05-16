@@ -18,7 +18,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   const [loading, setLoading] = React.useState(false);
 
   return (
-    <div className="w-full h-full overflow-hidden max-h-full soff p-4 text-gray-200 bg-gray-900">
+    <div className="w-full overflow-hidden max-h-full soff p-4 text-gray-200 bg-gray-900">
       <Link href="/">
         <Button className="w-full border-dashed border-white border">
           <PlusCircle className="mr-2 w-4 h-4" />
@@ -26,7 +26,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
         </Button>
       </Link>
 
-      <div className="flex h-full max-h-full overflow-hidden pb-20 flex-col gap-2 mt-4">
+      <div className="flex max-h-full overflow-hidden pb-20 flex-col gap-2 mt-4">
         {chats.map((chat) => (
           <Link key={chat.id} href={`/chat/${chat.id}`}>
             <div
