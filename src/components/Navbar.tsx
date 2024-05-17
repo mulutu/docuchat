@@ -1,17 +1,8 @@
 import Link from 'next/link'
 import { getUserById } from "@/lib/actions/user.actions";
-import UserAccountNav from './UserAccountNav';
 import MaxWidthWrapper from './MaxWidthWrapper'
 import { Button, buttonVariants } from './ui/button'
-import { ArrowRight } from 'lucide-react'
-//import MobileNav from './MobileNav'
 import { SignedIn, auth } from "@clerk/nextjs";
-import { eq, sql } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { users } from '@/lib/db/schema'
-import { redirect } from 'next/navigation'
-import { NextResponse } from 'next/server';
-
 
 const Navbar = async () => {
 
