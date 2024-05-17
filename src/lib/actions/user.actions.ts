@@ -12,7 +12,7 @@ import { CreateUserParams } from "@/app/types";
  */
 export async function getUserById(userId: string | any) {
     try {
-        const user = await db.select().from(users).where(eq(users.userId, userId));       
+        const user = await db.from('users').select('*').eq('userId', userId);       
 
         if (!user || user === null ) {
             console.log(" NO USER FOUND")
@@ -31,7 +31,7 @@ export async function getUserById(userId: string | any) {
 // CREATE
 export async function createUser( user: CreateUserParams) {
     try {  
-      const newUser = await db.insert(users).values({
+      const newUser = await db.from('users').insert([{
         userId: user?.userId,
         clerkId: user.clerkId as string,
         email: user.email,
@@ -41,7 +41,7 @@ export async function createUser( user: CreateUserParams) {
         lastName: user.lastName,
         //photo: "user?.photo as string",
         createdAt: new Date(),
-      });
+      }]);
   
       return JSON.parse(JSON.stringify(newUser));
     } catch (error) {

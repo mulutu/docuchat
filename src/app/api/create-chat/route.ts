@@ -14,23 +14,28 @@ export async function POST(req: Request, res: Response) {
   try {
     const body = await req.json();
     const { file_key, file_name } = body;
-    console.log(file_key, file_name);
+
+    console.log("FILE KEY:::: " + file_key, "FILE NAME:::::  " + file_name);
+    
     await loadS3IntoPinecone(file_key);
-    const chat_id = await db
-      .insert(chats)
-      .values({
-        fileKey: file_key,
-        pdfName: file_name,
-        pdfUrl: getS3Url(file_key),
-        userId,
-      })
-      .returning({
-        insertedId: chats.id,
-      });
+
+    const pdfUrl  = getS3Url(file_key);
+
+    const { data:chat_id, error } = await db
+      .from('chats')
+      .insert({ pdf_name: file_name, pdf_url: pdfUrl, created_at: new Date, user_id: userId, file_key: file_key })
+      .select('id')
+      .single();
+    
+    console.log("CREATE CHAT INSERT ::: ====>" + chat_id, error)
+
+    if(error){
+      return NextResponse.json({ error: "Error during insert with error ==> " + error }, { status: 404 } );
+    }
 
     return NextResponse.json(
       {
-        chat_id: chat_id[0].insertedId,
+        chat_id: chat_id.id
       },
       { status: 200 }
     );

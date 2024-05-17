@@ -7,6 +7,7 @@ import { checkSubscription } from "@/lib/subscription";
 import { auth } from "@clerk/nextjs";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 import React from "react";
 
 type Props = {
@@ -20,7 +21,14 @@ const ChatPage = async ({ params: { chatId } }: Props) => {
   if (!userId) {
     return redirect("/sign-in");
   }
-  const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
+  //const _chats = await db.select().from(chats).where( eq(chats.userId, userId) );
+  const { data: _chats, error } = await db.from('chats').select('*').eq('user_id', userId);
+
+  if (error) {
+    console.error('Error fetching chats:', error);
+    return NextResponse.json({ error: 'Error fetching chats' }, { status :  500 });
+  }
+
   if (!_chats) {
     return redirect("/");
   }
@@ -31,6 +39,8 @@ const ChatPage = async ({ params: { chatId } }: Props) => {
   const currentChat = _chats.find((chat) => chat.id === parseInt(chatId));
   const isPro = await checkSubscription();
 
+  console.log("CHAT ID PAGE: ============> " + JSON.stringify(_chats) )
+
   return (
     <div className="flex w-full max-h-full overflow-auto">
       <div className="flex w-full max-h-screen overflow-auto">
@@ -40,7 +50,7 @@ const ChatPage = async ({ params: { chatId } }: Props) => {
         </div>
         {/* pdf viewer */}
         <div className="max-h-screen p-4 oveflow-scroll flex-[5]">
-          <PDFViewer pdf_url={currentChat?.pdfUrl || ""} />
+          <PDFViewer pdf_url={currentChat.pdf_url || ""} />
         </div>
         {/* chat component */}
         <div className="flex-[3] border-l-4 border-l-slate-200">

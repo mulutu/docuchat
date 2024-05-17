@@ -1,5 +1,5 @@
 "use client";
-import { DrizzleChat } from "@/lib/db/schema";
+import { DrizzleChat, Chat } from "@/lib/db/schema";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
@@ -9,13 +9,16 @@ import axios from "axios";
 import SubscriptionButton from "./SubscriptionButton";
 
 type Props = {
-  chats: DrizzleChat[];
+  chats: Chat[];
   chatId: number;
   isPro: boolean;
 };
 
 const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   const [loading, setLoading] = React.useState(false);
+
+
+  console.log("CHAT SDIE BAR :::: =========> " + JSON.stringify(chats[0]) )
 
   return (
     <div className="w-full overflow-hidden h-screen soff p-4 text-gray-200 bg-gray-900">
@@ -37,7 +40,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
             >
               <MessageCircle className="mr-2" />
               <p className="w-full overflow-hidden text-sm truncate whitespace-nowrap text-ellipsis">
-                {chat.pdfName}
+                {chat.pdf_name}
               </p>
             </div>
           </Link>

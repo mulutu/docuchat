@@ -16,12 +16,25 @@ const openai = new OpenAIApi(config);
 export async function POST(req: Request) {
   try {
     const { messages, chatId } = await req.json();
-    const _chats = await db.select().from(chats).where(eq(chats.id, chatId));
+    const { data: _chats, error } = await db.from('chats').select('*').eq('id', chatId);
+
+    if (error) {
+      console.log("CHAT API ERROR:  ", error)
+      return NextResponse.json({ error: "Error fetching chats" }, { status: 500 });
+    }
+
     if (_chats.length != 1) {
+      console.log("CHAT API ERROR:  CHAT NOT FOUND")
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
-    const fileKey = _chats[0].fileKey;
+
+    
+
+    const fileKey = _chats[0].file_key;
     const lastMessage = messages[messages.length - 1];
+
+    console.log("CHAT API ERROR: " + fileKey)
+
     const context = await getContext(lastMessage.content, fileKey);
 
     const prompt = {
@@ -53,19 +66,29 @@ export async function POST(req: Request) {
     const stream = OpenAIStream(response, {
       onStart: async () => {
         // save user message into db
-        await db.insert(_messages).values({
-          chatId,
+        const { data, error} = await db.from('messages').insert({
+          chat_id: chatId,
           content: lastMessage.content,
+          created_at: new Date,
           role: "user",
         });
+
+        if(error){
+          console.log("Error inserting user message.", error)
+        }
       },
       onCompletion: async (completion) => {
         // save ai message into db
-        await db.insert(_messages).values({
-          chatId,
+        const { data, error} = await db.from('messages').insert({
+          chat_id: chatId,
           content: completion,
+          created_at: new Date,
           role: "system",
         });
+
+        if(error){
+          console.log("Error inserting system message.", error)
+        }
       },
     });
     return new StreamingTextResponse(stream);

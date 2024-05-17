@@ -7,6 +7,7 @@ console.log("DB URL:::: =============================> ", process.env.DATABASE_U
 export default {
   driver: "pg",
   schema: "./src/lib/db/schema.ts",
+  out: './supabase/migrations',
   dbCredentials: {
     connectionString: process.env.DATABASE_URL!,
   },

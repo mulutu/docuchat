@@ -18,10 +18,15 @@ export async function GET() {
       return new NextResponse("unauthorized", { status: 401 });
     }
 
-    const _userSubscriptions = await db
+    const { data:_userSubscriptions, error } = await db
+      .from('userSubscriptions')
       .select()
-      .from(userSubscriptions)
-      .where(eq(userSubscriptions.userId, userId));
+      .eq('userId', userId);
+
+    if(error){
+      return NextResponse.json({ error: "Erroe fetching user subscriptions" }, { status: 500 });
+    }
+    
     if (_userSubscriptions[0] && _userSubscriptions[0].stripeCustomerId) {
       // trying to cancel at the billing portal
       const stripeSession = await stripe.billingPortal.sessions.create({

@@ -8,6 +8,8 @@ import SubscriptionButton from "@/components/SubscriptionButton";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { error } from "console";
+import { NextResponse } from "next/server";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -15,10 +17,17 @@ export default async function Home() {
   const isPro = await checkSubscription();
   let firstChat;
   if (userId) {
-    firstChat = await db.select().from(chats).where(eq(chats.userId, userId));
-    if (firstChat) {
-      firstChat = firstChat[0];
+   var { data:_firstChat, error } = await db.from('chats').select('*').eq('user_id', userId); // check is single() is correct
+
+    if(error){
+      console.log("Unable to fetch first chat. Error: ", error)
+      return NextResponse.json({error: error}, { status: 500 })
     }
+    if (_firstChat) {
+      firstChat = _firstChat[0];      
+    }
+
+    console.log("FIRST CHAT :::: ======> " + JSON.stringify(firstChat.id) )
   }
   return (
     <>
