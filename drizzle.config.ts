@@ -13,3 +13,5 @@ export default {
 } satisfies Config;
 
 // npx drizzle-kit push:pg
+
+// npx drizzle update

@@ -3,7 +3,9 @@ import { clerkClient } from "@clerk/nextjs";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { json } from "stream/consumers";
 import { Webhook } from "svix";
+import { createUser } from "@/lib/actions/user.actions";
 
 //import { createUser, deleteUser, updateUser } from "@/lib/actions/user.actions";
 
@@ -32,6 +34,7 @@ export async function POST(req: Request) {
 
   // Get the body
   const payload = await req.json();
+  //const body = payload;
   const body = JSON.stringify(payload);
 
   // Create a new Svix instance with your secret.
@@ -62,17 +65,27 @@ export async function POST(req: Request) {
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
 
     const user = {
+      userId: id,
       clerkId: id,
       email: email_addresses[0].email_address,
+      password: "password",
       username: username!,
       firstName: first_name,
       lastName: last_name,
       photo: image_url,
     };
 
+    /*userId: varchar("user_id", { length: 256 }).primaryKey().notNull(),
+    clerkId: text("clerk_id").notNull(),
+    email: text("name").unique().notNull(),
+    password: text("password").notNull(), // Hashed password
+    firstName: text("first_name"),
+    lastName: text("last_name"),
+    createdAt: timestamp("created_at").defaultNow().notNull(), */
+
     console.log("CLERK USER :: =========> ")
 
-    /*const newUser = await createUser(user);
+    const newUser = await createUser(user);
 
     // Set public metadata
     if (newUser) {
@@ -81,7 +94,7 @@ export async function POST(req: Request) {
           userId: newUser._id,
         },
       });
-    }*/
+    }
 
     return NextResponse.json({ message: "OK", });
   }

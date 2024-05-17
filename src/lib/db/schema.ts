@@ -21,6 +21,19 @@ export const chats = pgTable("chats", {
 
 export type DrizzleChat = typeof chats.$inferSelect;
 
+export const users = pgTable("users", {
+  userId: text("user_id").primaryKey().notNull(),
+  clerkId: text("clerk_id").notNull(),
+  email: text("name").unique().notNull(),
+  password: text("password"), // Hashed password
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+
+export type DrizzleUser = typeof users.$inferSelect;
+
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
   chatId: integer("chat_id")
